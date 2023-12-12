@@ -1,0 +1,271 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <title>Booking</title>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+
+        nav{
+            padding: 0px 0px;
+        }
+
+        .navbar-default{
+            background-color: white;
+        }
+
+        .navbar{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-nav li{
+            margin-left: 7rem;
+            
+        }
+
+
+        #modify-sort{
+            padding: 15px;
+            margin-top: 91px;
+        }
+
+
+        .book{
+            margin-top: 200px;
+            margin-bottom: 120px;
+        }
+
+
+        footer div p a, footer ul li a, footer div a{
+            color: rgb(109, 132, 148);
+        }
+
+        footer a:hover{
+            text-decoration: none;
+            color: #03427F;
+        }
+
+        .footer-down{
+            margin: 50px 0; 
+            display: flex; 
+            justify-content: space-between;
+        }
+
+
+        @media(max-width: 600px){
+            .navbar{
+                display:inline-block;            
+            }
+
+            .footer-down{
+                flex-direction: column;
+                line-height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a href="#">
+                <img src="{% static 'images/favicon.png' %}" alt="flight-booking" width="180" height="90" />
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'home' %}">Flights</a></li>
+                <li><a href="#">Hotels</a></li>
+                <li><a href="#">Experience</a></li>
+                <li><a href="#">Support</a></li>
+
+                {% if user.is_authenticated %}
+                    <li><a style="text-transform: capitalize;"><span class="glyphicon glyphicon-user"></span> {{user.username}}</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-user"></span> Login</a></li>
+                    <li><a href="{% url 'register' %}">Sign up</a></li>
+                {% endif %}
+            </ul> 
+        </div>
+    </nav>
+
+
+    <div class="navbar navbar-default navbar-fixed-top" id="modify-sort">
+        <div class="dropdown" id="sort">
+            <button type="button" class=" btn btn-default dropdown-toogle" data-toggle="dropdown">Sort by <span class="caret"></span></button>
+            <ul class="dropdown-menu" role="menu">  
+                <li><a href="{% url 'sort' sort_booking='cheapest' %}">Price</a></li>
+                <li class = "divider"></li>
+                <li><a href="{% url 'sort' sort_booking='fastest' %}">Stop</a></li>
+                <li class = "divider"></li>
+                <li><a href="{% url 'sort' sort_booking='earliest' %}">Departure</a></li>
+                <li class = "divider"></li>
+                <li><a href="{% url 'sort' sort_booking='airline' %}">Airline</a></li>
+            </ul>
+        </div>
+        
+        <button class="btn btn-md">Modify &ensp; <span class="glyphicon glyphicon-pencil"></span></button>
+    </div>
+
+         
+    <div class="container">       
+        <div class="book">
+
+            {% for booking in bookings %}
+            <div class="row" style="padding: 30px 0 20px; margin-bottom: 30px; border: 1px solid #f1f5f5; border-radius: 15px; background-color: #f1f5f5;">
+                <div class="col-sm-9 col-sm-offset-1" style="display: flex; flex-direction: row; justify-content: space-around;">
+
+                    <div class="col-xs-2" style=" align-self: center;">
+                        <h4 style="text-transform: capitalize;">{{booking.airline.name}}</h4>
+                    </div>
+
+                    <div class="col-xs-3" style="display: flex; flex-direction: column;">
+                        <p>{{booking.offer.name}}</p>
+                        <p>{{booking.departure}}</p>
+                        <p>{{booking.depart_from.name}}</p>
+                    </div>
+
+                    <div class="col-xs-2" style="text-align: center;">
+                        <p>{{booking.round.title}}</p>
+                    </div>
+
+                    <div class="col-xs-3" style="display: flex; flex-direction: column; text-align: right;">
+                        <p>{{booking.flight_class.name}}</p>
+                        <p>{{booking.arrival}}</p>
+                        <p>{{booking.destination.name}}</p>
+                    </div>
+
+                    <div class="col-xs-3" style="display: flex; flex-direction: column; align-self: center; text-align: center; padding-left: 20px;">
+                        <p>NGN {{booking.price}}</p>
+                        <a href="{% url 'book' booking.id %}" class="btn btn-md btn-default">Book</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div> 
+
+
+
+
+    <footer style="background-color: #f1f4f7;">
+        <div class="container">
+            <p class="col-sm-offset-4" style="padding-top: 60px; font-size: 16px; font-weight: 600;">Search for Flights, Hotels and Holidays packages</p>
+
+            <div class="row" style=" padding-bottom: 40px;">
+                <div class="col-sm-3" style=" text-align: center;">
+                    <img src="{% static 'images/favicon.png' %}" alt="flight-booking" width="180" height="90" />
+
+                    <p style="color: rgb(109, 132, 148); font-size: 15px; padding: 20px 0px 10px;">Let's stay connected</p>
+                    
+                    <ul class="list-inline" style="font-size: 23px;">
+                        <li><a href="" class="fa fa-facebook"></a></li>
+                        <li><a href="" class="fa fa-twitter"></a></li>
+                        <li><a href="" class="fa fa-instagram"></a></li>
+                        <li><a href="" class="fa fa-linkedin"></a></li>
+                        <li><a href="" class="fa fa-youtube"></a></li>
+                    </ul>
+                </div>
+
+                <div style="padding-top: 10px;">
+                    <div class="col-sm-2 col-sm-offset-1">
+                        <p style="font-size: 15px; font-weight: 600;">African Flights</p>
+                        <p><a href="">Flights to Capetown</a></p>
+                        <p><a href="">Flights to Accra</a></p>
+                        <p><a href="">Flights to Abijan</a></p>
+                        <p><a href="">Flights to Djibouti</a></p>
+
+                        <p style="font-size: 15px; font-weight: 600; padding-top: 35px;">African Hotels</p>
+                        <p><a href="">Hotels in Capetown</a></p>
+                        <p><a href="">Hotels in Accra</a></p>
+                        <p><a href="">Hotels in Abijan</a></p>
+                        <p><a href="">Hotels in Djibouti</a></p>
+                    </div>
+                    
+                    <div class="col-sm-2">
+                        <p style="font-size: 15px; font-weight: 600;">European Flights</p>
+                        <p><a href="">Flights to London</a></p>
+                        <p><a href="">Flights to Paris</a></p>
+                        <p><a href="">Flights to Berlin</a></p>
+                        <p><a href="">Flights to Madrid</a></p>
+
+                        <p style="font-size: 15px; font-weight: 600; padding-top: 35px;">European Hotels</p>
+                        <p><a href="">Hotels in London</a></p>
+                        <p><a href="">Hotels in Paris</a></p>
+                        <p><a href="">Hotels in Berlin</a></p>
+                        <p><a href="">Hotels in Madrid</a></p>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <p style="font-size: 15px; font-weight: 600;">Asian Flights</p>
+                        <p><a href="">Flights to Doha</a></p>
+                        <p><a href="">Flights to Dubai</a></p>
+                        <p><a href="">Flights to Beijing</a></p>
+                        <p><a href="">Flights to Hong Kong</a></p>
+
+                        <p style="font-size: 15px; font-weight: 600; padding-top: 35px;">Asian Hotels</p>
+                        <p><a href="">Hotels in Doha</a></p>
+                        <p><a href="">Hotels in Dubai</a></p>
+                        <p><a href="">Hotels in Beijing</a></p>
+                        <p><a href="">Hotels in Hong Kong</a></p>
+                    </div>
+
+                    <div class="col-sm-2"> 
+                        <p style="font-size: 15px; font-weight: 600;">American Flights</p>
+                        <p><a href="">Flights to New York</a></p>
+                        <p><a href="">Flights to Houston</a></p>
+                        <p><a href="">Flights to Atlanta</a></p>
+                        <p><a href="">Flights to Miami</a></p>
+
+                        <p style="font-size: 15px; font-weight: 600; padding-top: 35px;">American Hotels</p>
+                        <p><a href="">Hotels in New York</a></p>
+                        <p><a href="">Hotels in Houston</a></p>
+                        <p><a href="">Hotels in Atlanta</a></p>
+                        <p><a href="">Hotels in Miami</a></p>
+                    </div>
+                </div> 
+            </div>
+
+
+            <hr style="height: 2px; background-color: rgb(109, 132, 148);">
+
+            <div class="footer-down">
+                <div>
+                    <a href="">Cookie policy</a> &ensp; &ensp; &ensp; 
+                    <a href="">Legal</a> &ensp; &ensp; &ensp;
+                    <a href="">Privacy policy</a> &ensp; &ensp; &ensp;
+                    <a href="">Accessibilty</a> &ensp; &ensp; &ensp;
+                    <a href="">Cookie consent</a>
+                </div>
+                <div>
+                    <p style="color: rgb(109, 132, 148);">Oluwole Michael. All rights reserved</p>
+                </div>
+            </div> 
+        </div>
+    </footer>
+
+
+
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+</html>
