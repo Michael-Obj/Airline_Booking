@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+# import dj_database_url
 import os
 load_dotenv()
 
@@ -96,6 +97,10 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': dj_database_url.parse('postgres://airlinebooking_user:AZWZgdFcrwbtYr5LcgltvXRAmy94e0y7@dpg-clrquokm7d1c73f4fq80-a.oregon-postgres.render.com/airlinebooking')
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -140,7 +145,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
-# STATIC_ROOT = os.path.join(BASE_DIR, 'mystatic')
+STATIC_ROOT = os.path.join(BASE_DIR, 'mystatic')
 
 MEDIA_URL = 'media/'
 
