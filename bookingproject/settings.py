@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
-import dj_database_url
+# import dj_database_url
 import os
 load_dotenv()
 
@@ -86,20 +86,20 @@ WSGI_APPLICATION = 'bookingproject.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'AirlineN',
-#         'USER': os.getenv("USER"),
-#         'PASSWORD': os.getenv("PASSWORD"),
-#         'HOST': 'localhost',
-#         'PORT': os.getenv("PORT"),
-#     }
-# }
-
 DATABASES = {
-    'default': dj_database_url.parse('postgres://airlinebooking_user:AZWZgdFcrwbtYr5LcgltvXRAmy94e0y7@dpg-clrquokm7d1c73f4fq80-a.oregon-postgres.render.com/airlinebooking')
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'AirlineN',
+        'USER': os.getenv("USER"),
+        'PASSWORD': os.getenv("PASSWORD"),
+        'HOST': 'localhost',
+        'PORT': os.getenv("PORT"),
+    }
 }
+
+# DATABASES = {
+#     'default': dj_database_url.parse('postgres://airlinebooking_user:AZWZgdFcrwbtYr5LcgltvXRAmy94e0y7@dpg-clrquokm7d1c73f4fq80-a.oregon-postgres.render.com/airlinebooking')
+# }
 
 
 # Password validation
