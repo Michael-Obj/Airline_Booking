@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
-    <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="icon" href="{% static 'images/favicon.png' %}">
+    
     <title>Airline Booking</title>
 
     <style>
@@ -105,6 +106,11 @@
             border-radius: 20px;
         }
 
+        .flight-letter .btn-link{
+            color: #fff;
+            text-decoration: none;
+        }
+
 
         footer div p a, footer ul li a, footer div a{
             color: rgb(109, 132, 148);
@@ -128,13 +134,25 @@
 
 
         @media screen and ((max-width: 768px) and (min-width: 601px)){
-
+            .navbar{
+                display:inline-block;            
+            }
+            
+            .yes .alert{
+                margin-top: 40px;
+                margin-bottom: -10px;
+            }
         }
 
 
         @media(max-width: 600px){
             .navbar{
                 display:inline-block;            
+            }
+
+            .yes .alert{
+                margin-top: 50px;
+                margin-bottom: -10px;
             }
 
             .footer-down{
@@ -180,6 +198,22 @@
 
     <section class="yes">
         <img src="{% static 'images/flying_1.jpg' %}" alt="airplane" id="bg">
+
+        {% for message in messages %}
+            {% if message.tags != "success" %}
+
+            <div class="alert alert-danger alert-dismissible fade in" style="padding: 15px 30px 15px 20px;">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{message}}
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-{{message.tags}} alert-dismissible fade in" style="padding: 15px 30px 15px 20px;">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{message}}
+            </div>
+
+            {% endif %}
+        {% endfor %}
 
         <h3 style="margin-bottom: 25px; font-weight: bold;">Search and Book your Flights and Hotels here...</h3>
     
@@ -610,7 +644,9 @@
 
 
     <div class="container">
-        <form action="" method="POST">
+        <form action="{% url 'letter' %}" method="POST">
+            {% csrf_token %}
+
             <div class="flight-letter">
                 <img src="{% static 'images/flying_11.jpg' %}" alt="news letter">
                 
@@ -619,16 +655,14 @@
                 <p style="font-size: 17px; color: #fff; margin: 30px 0 20px;">Subscribe now and be the first to access our exclusive offers!</p>
                      
                 <div class="col-sm-6 col-xs-10">
-                    <input type="text" placeholder="Enter your email" class="form-control" name="" style="padding: 25px; margin-bottom: 20px; font-size: 20px;">
+                    <input type="text" placeholder="Enter your email" class="form-control" name="newsletter_email" style="padding: 25px; margin-bottom: 20px; font-size: 20px;">
                 </div>
 
                 <div style="margin: 0 0 40px; color: #fff;">
                     <input type="checkbox"><span> I would like to get offers and news. I have read and understood the <a href="" style="text-decoration: underline; color: #fff;">privacy notice</a></span>
                 </div>
 
-                <div style="border-radius: 30px; border: 1px solid #fff; padding: 10px 60px; font-size: 20px;">
-                    <a href="mailto:{{ user.email }}" style="color: #fff; text-decoration: none;">Subscribe</a>
-                </div>  
+                <button class="btn btn-link" style="border-radius: 30px; border: 1px solid #fff; padding: 10px 60px; font-size: 20px;">Subscribe</button> 
             </div>
         </form>
     </div>
@@ -734,5 +768,8 @@
 
     <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script>
+        alert("Airline-Booking is a software project built with major operations on the user sign-up, sign-in, flight booking and offer news subscription. Do enjoy your browsing experience. Thank you.");  
+    </script>
 </body>
 </html>

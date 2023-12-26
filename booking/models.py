@@ -4,6 +4,14 @@ import uuid
 
 # Create your models here.  
 
+class Flight_Letter(models.Model):
+    email = models.EmailField()
+
+    def __str__(self):
+        return f"{self.email}"
+
+    
+
 
 class Airline(models.Model):
     name = models.CharField(max_length=200)
@@ -59,7 +67,8 @@ class Booking(models.Model):
     arrival_2 = models.DateTimeField(default=None, null=True, blank=True)
     passenger = models.CharField(default=1)
   
-    stops = models.PositiveIntegerField(default=0)
+    stops = models.PositiveIntegerField(default=1)
+    each_extra_luggage_price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -92,8 +101,9 @@ class Checkout(models.Model):
     address = models.TextField()
 
     # others 
-    seat_no = models.PositiveIntegerField(unique=False)
-    extra_luggage = models.CharField(default=0)
+    seat_no = models.PositiveIntegerField(unique=False, null=True, blank=True)
+    extra_luggage_quantity = models.CharField(default=0)
+    extra_luggage_price = models.DecimalField(decimal_places=2, max_digits=20, default=0)
 
     total_fare = models.DecimalField(decimal_places=2, max_digits=20)
     date = models.DateTimeField(auto_now_add=True)

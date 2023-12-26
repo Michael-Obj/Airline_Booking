@@ -5,11 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap">
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	
-	<link rel="stylesheet" href="{% static 'login/css/style.css' %}">
+	<link rel="stylesheet" href="{% static 'login_css/style.css' %}">
+
+    <link rel="icon" href="{% static 'images/favicon.png' %}">
 
     <title>Register</title>
 </head>
@@ -22,7 +24,7 @@
 				<div class="col-md-7 col-lg-5">
 					<div class="wrap">
 
-						<div class="img" style="background-image: url('/static/login/images/flying_8.jpg');"></div>
+						<div class="img" style="background-image: url('/static/login_images/flying_8.jpg');"></div>
 
 						<div class="login-wrap p-4 p-md-5">
 			      	        <div class="d-flex">
@@ -36,7 +38,19 @@
 								{% csrf_token %}
 
                                 {% for message in messages %}
-                                <li class="list-group-item list-group-item-danger" style="padding: 3px 15px; border-radius: 5px; margin-bottom: 40px;">{{message}}</li>
+                                    {% if message.tags != "success" %}
+
+                                    <div class="alert alert-danger alert-dismissible" style="padding: 15px 30px 15px 20px;">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{message}}
+                                    </div>
+
+                                    {% else %}
+
+                                    <div class="alert alert-{{message.tags}} alert-dismissible" style="padding: 15px 30px 15px 20px;">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{message}}
+                                    </div>
+
+                                    {% endif %}
                                 {% endfor %}
                                
 
@@ -77,10 +91,10 @@
 	</section>
 
 
-    <script src="{% static 'login/js/jquery.min.js' %}"></script>
-	<script src="{% static 'login/js/popper.js' %}"></script>
-	<script src="{% static 'login/js/bootstrap.min.js' %}"></script>
-	<script src="{% static 'login/js/main.js' %}"></script>
+    <script src="{% static 'login_js/jquery.min.js' %}"></script>
+	<script src="{% static 'login_js/popper.js' %}"></script>
+	<script src="{% static 'login_js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'login_js/main.js' %}"></script>
 
 </body>
 </html>

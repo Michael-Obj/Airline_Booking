@@ -4,6 +4,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from . models import *
 from django.contrib.auth.decorators import login_required
+from emailsend import OTGGenerator
 
 from django.urls import reverse
 from .forms import PaymentInitForm
@@ -26,10 +27,27 @@ def Home(request):
         flight = Flight_Class.objects.all().order_by('name')
         location = Location.objects.all().order_by('name')
 
-        # all_booking = Booking.objects.all()
-
         return render(request, "index.html", {"rounds": trip_round, "flights": flight, "locations": location})
     
+    except Exception as ex:
+        print(ex)
+
+
+
+def FlightLetter(request):
+    try:
+        if request.method=="POST":
+            email = request.POST['newsletter_email']
+
+            flight_letter = Flight_Letter(
+                email=email
+                )
+            flight_letter.save()
+
+            OTGGenerator([email], "SUBSCRIBTION TO EXCLUSIVE OFFER NEWS!!!", """We kindly inform you that you have subscribe to our news letter for frequent exclusive offer updates""")
+            messages.success(request, 'You have successfully subscribe to our exclusive offer updates')
+            return render(request, "index.html")
+
     except Exception as ex:
         print(ex)
 
@@ -130,6 +148,8 @@ def Book(request, id):
             "departure": str(booking.departure),
             "arrival": str(booking.arrival),
             # "departure_2": 
+            "stops": str(booking.stops),
+            "each_extra_luggage_price": str(booking.each_extra_luggage_price),
             "price": str( booking.price)
         }
         book = request.session["book"]
@@ -161,8 +181,9 @@ def BookingCheckout(request):
             mail = request.POST.get('email', False)
             address = request.POST['address']
 
-            seat_no = request.POST['seat_no']
-            extra_luggage = request.POST['extra_luggage']
+            # seat_no = request.POST['seat_no']
+            extra_luggage_quantity = request.POST['extra_luggage_quantity']
+            extra_luggage_price = request.POST['extra_luggage_price']
             total_fare = request.POST['total_fare']
 
             checkout_info = {
@@ -179,8 +200,9 @@ def BookingCheckout(request):
                 "contact": contact,
                 "mail": mail,
                 "address": address,
-                "seat_no": seat_no,
-                "extra_luggage": extra_luggage,
+                # "seat_no": seat_no,
+                "extra_luggage_quantity": extra_luggage_quantity,
+                "extra_luggage_price": extra_luggage_price,
                 "total_fare": total_fare
             }
 
@@ -188,12 +210,13 @@ def BookingCheckout(request):
 
             checkout_info = request.session["checkout_info"]
             book = request.session["book"]
+
+            if len(contact) != 11:
+                messages.error(request, 'Contact format not accepted')
+                return render(request, "checkout.html", {"checking": checkout_info, "book": book})    
             
-            if Checkout.objects.filter(seat_no=seat_no).exists():
-                    messages.error(request, 'Seat no taken')
-                    return render(request, "checkout.html", {"checking": checkout_info, "book": book})
-            
-            else:
+            elif gender == 'male' or gender == 'female':    
+
                 if request.user.is_authenticated:
                     user_id = request.session["userId"]  
                     user = User.objects.get(pk = user_id)
@@ -214,15 +237,19 @@ def BookingCheckout(request):
                         contact=contact,
                         mail=mail,
                         address=address,
-                        seat_no=seat_no,
-                        extra_luggage=extra_luggage,
+                        # seat_no=seat_no,
+                        extra_luggage_quantity=extra_luggage_quantity,
+                        extra_luggage_price=extra_luggage_price,
                         total_fare=total_fare
                         )
                     checkout.save()
 
                     return redirect('create')
-                return redirect("login")    
-        
+                return redirect("login")
+            
+            messages.error(request, 'Gender not accepted')
+            return render(request, "checkout.html", {"checking": checkout_info, "book": book})
+                    
         elif request.method=="GET":
             return redirect("home")
             
@@ -253,6 +280,9 @@ def Register(request):
                         password=password
                         )
                     user.save()
+
+                    OTGGenerator([email], "SUCCESSFUL REGISTRATION!!!", """We kindly inform you that you have sucessfully register your account on Airline-Booking""")
+                    messages.success(request, 'You have successfully register your account')
                     return render(request, "login.html", {"user": user}) 
 
             else:
@@ -280,6 +310,8 @@ def Login(request):
 
                 request.session["userId"] = user.id
                 request.session["username"] = user.username
+                request.session["email"] = user.email
+                email = request.session["email"]
 
                 session_keys = list(request.session.keys())
                 if "checkout_info" in session_keys:
@@ -287,10 +319,18 @@ def Login(request):
                     
                     if checkout_info is not None:
                         book = request.session["book"]
+                        
+                        OTGGenerator([email], "SUCCESSFUL LOGIN!!!", """We kindly inform you that you have sucessfully login your account on Airline-Booking""")
+                        messages.success(request, 'You have successfully login')
                         return render(request, "checkout.html", {"checking": checkout_info, "book": book})
-                    else: 
+                    
+                    else:
+                        OTGGenerator([email], "SUCCESSFUL LOGIN!!!", """We kindly inform you that you have sucessfully login your account on Airline-Booking""")
                         return redirect("home")
+
+                OTGGenerator([email], "SUCCESSFUL LOGIN!!!", """We kindly inform you that you have sucessfully login your account on Airline-Booking""")   
                 return redirect("home")
+            
             else:
                 messages.error(request, 'Incorrect username or password')
                 return render(request, "login.html") 
