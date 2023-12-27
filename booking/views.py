@@ -45,7 +45,6 @@ def FlightLetter(request):
             flight_letter.save()
 
             OTGGenerator([email], "SUBSCRIBTION TO EXCLUSIVE OFFER NEWS!!!", """We kindly inform you that you have subscribe to our news letter for frequent exclusive offer updates""")
-            messages.success(request, 'You have successfully subscribe to our exclusive offer updates')
             return render(request, "index.html")
 
     except Exception as ex:
