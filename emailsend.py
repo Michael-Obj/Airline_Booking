@@ -13,8 +13,8 @@ def OTGGenerator(receivers, email_subject, email_body):
         for receiver in receivers:
             OTP = random.randint(100000, 999999)
 
-            email_sender = os.getenv("email_sender")
-            email_password = os.getenv("email_password")
+            email_sender = 'airlinebookingapp@gmail.com'
+            email_password = 'neoviwqdwpnvqciw'
             email_receiver = receiver
 
             subject = email_subject
