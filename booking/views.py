@@ -282,7 +282,6 @@ def Register(request):
                     user.save()
 
                     OTGGenerator([email], "SUCCESSFUL REGISTRATION!!!", """We kindly inform you that you have sucessfully register your account on Airline-Booking""")
-                    messages.success(request, 'You have successfully register your account')
                     return render(request, "login.html", {"user": user}) 
 
             else:
