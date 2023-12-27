@@ -4,16 +4,11 @@ from . import views
 
 urlpatterns = [
     path("", views.Home, name="home"),
+    path("letter", views.FlightLetter, name="letter"),
     path("booking-filter", views.BookingFilter, name="booking_filter"),
     path("sort/<str:sort_booking>/", views.SortBookingFilter, name="sort"),
     path("book/<str:id>/", views.Book, name="book"),
     path("checkout", views.BookingCheckout, name="checkout"),
-
-
-    # path("add", views.CreateToDo, name="create"),
-    # path("edit/<str:id>/", views.GetByIdToDo, name="getById"),
-    # path("update/<str:id>/", views.UpdateToDo, name="updating"),
-    # path("delete/<str:id>/", views.DeleteToDo, name="deleting"),
 
     path("register", views.Register, name="register"),
     path("login", views.Login, name="login"),

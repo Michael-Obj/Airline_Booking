@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.png' %}">
 
     <title>Booking</title>
     <style>
@@ -76,6 +76,13 @@
         }
 
 
+        @media screen and ((max-width: 768px) and (min-width: 601px)){
+            .navbar{
+                display:inline-block;            
+            }
+        }
+
+
         @media(max-width: 600px){
             .navbar{
                 display:inline-block;            
@@ -122,8 +129,7 @@
 
 
 
-    <section>
-        
+    <section>   
         <div class="checkout container">          
 
             <div class="row">
@@ -141,7 +147,19 @@
                         <div class="col-sm-10 col-sm-offset-1">
 
                             {% for message in messages %}
-                                <li class="list-group-item list-group-item-danger">{{message}}</li>
+                                {% if message.tags != "success" %}
+
+                                <div class="alert alert-danger alert-dismissible fade in" style="padding: 15px 30px 15px 20px;">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{message}}
+                                </div>
+
+                                {% else %}
+
+                                <div class="alert alert-{{message.tags}} alert-dismissible fade in" style="padding: 15px 30px 15px 20px;">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>{{message}}
+                                </div>
+
+                                {% endif %} 
                             {% endfor %}
 
                         {% if checking %}
@@ -166,11 +184,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="date_of_birth">Date of Birth:</label>
-                                <input type="date" name="date_of_birth" id="" class="form-control" placeholder="Date Of Birth" value="{{checking.date_of_birth}}" required>
+                                <input type="date" name="date_of_birth" id="dateOfBirthId" class="form-control" placeholder="Date Of Birth" value="{{checking.date_of_birth}}" onchange="validateDateOfBirth(event)" required>
                             </div>
                             <div class="form-group">
                                 <label for="gender">Gender:</label>
-                                <input type="text" name="gender" id="" class="form-control" placeholder="Gender" value="{{checking.gender}}" required>
+                                <input type="text" name="gender" id="" class="form-control" placeholder="Gender (male or female)" value="{{checking.gender}}" required>
                             </div>
 
                             <h3 style="padding: 20px 0px 10px;">Passport Details</h3>
@@ -180,7 +198,7 @@
                             </div>                            
                             <div class="form-group">
                                 <label for="passport_expiry_date">Passport Expiry Date:</label>
-                                <input type="date" name="passport_expiry_date" id="" class="form-control" placeholder="Passport Expiry Date" value="{{checking.passport_expiry_date}}" required>
+                                <input type="date" name="passport_expiry_date" id="expiryId" class="form-control" placeholder="Passport Expiry Date"  value="{{checking.passport_expiry_date}}" onchange="validatePassportExpiryDate(event)" required>
                             </div>
                             <div class="form-group">
                                 <label for="passport_issuing_authority">Passport Issuing Authority:</label>
@@ -190,7 +208,7 @@
                             <h3 style="padding: 20px 0px 10px;">Where should we send your confirmation?</h3>
                             <div class="form-group">
                                 <label for="contact">Contact:</label>
-                                <input type="number" name="contact" id="" class="form-control" placeholder="Contact" value="{{checking.contact}}" required>
+                                <input type="tel" name="contact" id="" class="form-control" placeholder="E.g. 08017****78" maxlength="11" minlength="11" max="99999999999" min="0" value="{{checking.contact}}" required>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email:</label>
@@ -202,9 +220,32 @@
                             </div>
 
                             <div class="seat_no" style="padding-top: 20px;">
-                                <input type="number" name="seat_no" id="" class="form-control" placeholder="Seat No" value="{{checking.seat_no}}" required>
-                                <input type="number" name="extra_luggage" id="" class="form-control" placeholder="Extra Luggage" value="{{checking.extra_luggage}}" required>
-                                <input type="number" name="total_fare" id="" class="form-control" placeholder="Total Fare" value="{{checking.total_fare}}" required>
+                                <input type="number" name="seat_no" id="" class="form-control" placeholder="Specific seat number is not available" value="" readonly>                                
+
+                                <div>
+                                    <p style="margin-bottom: -15px;">NB: Each extra luggage is NGN {{book.each_extra_luggage_price}}</p>
+                                    <input type="number" name="extra_luggage_quantity" id="extraLuggageQuantity" class="form-control" placeholder="Extra Luggage" min="0" value="{{checking.extra_luggage_quantity}}" onchange="calculatePrice(event)">    
+                                </div>
+                                
+                                <div hidden>
+                                    <p style="margin-bottom: -15px;">Each Extra Luggage Amount</p>
+                                    <input type="number" name="each_extra_luggage_price" id="eachExtraLuggageAmount" class="form-control" placeholder="Each Extra Luggage Price" value="{{book.each_extra_luggage_price}}" readonly>
+                                </div>
+                                
+                                <div>
+                                    <p style="margin-bottom: -15px;">Extra Luggage Amount</p>
+                                    <input type="number" name="extra_luggage_price" id="extraLuggageAmount" class="form-control" placeholder="Extra Luggage Price" value="{{checking.extra_luggage_price}}" readonly>
+                                </div>
+
+                                <div>
+                                    <p style="margin-bottom: -15px;">Flight Amount</p>
+                                    <input type="number" name="flight_fare" id="flightAmount" class="form-control" placeholder="Flight Fare" value="{{book.price}}" readonly>
+                                </div>
+
+                                <div>
+                                    <p style="margin-bottom: -15px;">Total Amount</p>
+                                    <input type="number" name="total_fare" id="totalAmount" class="form-control" placeholder="Total Fare" value="{{checking.total_fare}}" readonly>
+                                </div>
                             </div>
                         {% else %}
 
@@ -234,11 +275,11 @@
 
                             <div class="form-group">
                                 <label for="date_of_birth">Date of Birth:</label>
-                                <input type="date" name="date_of_birth" id="" class="form-control" placeholder="Date Of Birth" required>
+                                <input type="date" name="date_of_birth" id="dateOfBirthId" class="form-control" placeholder="Date Of Birth" onchange="validateDateOfBirth(event)" required>
                             </div>
                             <div class="form-group">
                                 <label for="gender">Gender:</label>
-                                <input type="text" name="gender" id="" class="form-control" placeholder="Gender" required>
+                                <input type="text" name="gender" id="" class="form-control" placeholder="Gender (male or female)" required>
                             </div>
                             
                             <h3 style="padding: 20px 0px 10px;">Passport Details</h3>
@@ -249,7 +290,7 @@
                             
                             <div class="form-group">
                                 <label for="passport_expiry_date">Passport Expiry Date:</label>
-                                <input type="date" name="passport_expiry_date" id="" class="form-control" placeholder="Passport Expiry Date" required>
+                                <input type="date" name="passport_expiry_date" id="expiryId" class="form-control" placeholder="Passport Expiry Date" onchange="validatePassportExpiryDate(event)" required>
                             </div>
 
                             <div class="form-group">
@@ -260,7 +301,7 @@
                             <h3 style="padding: 20px 0px 10px;">Where should we send your confirmation?</h3>
                             <div class="form-group">
                                 <label for="contact">Contact:</label>
-                                <input type="number" name="contact" id="" class="form-control" placeholder="Contact" required>
+                                <input type="tel" name="contact" id="" class="form-control" placeholder="E.g. 08017****78" maxlength="11" minlength="11" max="99999999999" min="0" required>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email:</label>
@@ -272,11 +313,32 @@
                             </div>
                             
                             <div class="seat_no" style="padding-top: 20px;">
-                                <input type="number" name="seat_no" id="" class="form-control" placeholder="Seat No" required>
+                                <input type="number" name="seat_no" id="" class="form-control" placeholder="Specific seat number is not available" value="" readonly>
 
-                                <p style="margin-bottom: -15px;">NB: Each extra luggage is NGN 12,000</p>
-                                <input type="number" name="extra_luggage" id="luggage" class="form-control" placeholder="Extra Luggage" value="0" onchange="calculatePrice(event)" required>
-                                <input type="number" name="total_fare" id="price" class="form-control" placeholder="Total Fare" value="{{book.price}}" readonly>
+                                <div>
+                                    <p style="margin-bottom: -15px;">NB: Each extra luggage is NGN {{book.each_extra_luggage_price}}</p>
+                                    <input type="number" name="extra_luggage_quantity" id="extraLuggageQuantity" class="form-control" placeholder="Extra Luggage" min="0" value="0" onchange="calculatePrice(event)">    
+                                </div>
+                                
+                                <div hidden>
+                                    <p style="margin-bottom: -15px;">Each Extra Luggage Amount</p>
+                                    <input type="number" name="each_extra_luggage_price" id="eachExtraLuggageAmount" class="form-control" placeholder="Each Extra Luggage Price" value="{{book.each_extra_luggage_price}}" readonly>
+                                </div>
+                                
+                                <div>
+                                    <p style="margin-bottom: -15px;">Extra Luggage Amount</p>
+                                    <input type="number" name="extra_luggage_price" id="extraLuggageAmount" class="form-control" placeholder="Extra Luggage Price" value="0" readonly>
+                                </div>
+
+                                <div>
+                                    <p style="margin-bottom: -15px;">Flight Amount</p>
+                                    <input type="number" name="flight_fare" id="flightAmount" class="form-control" placeholder="Flight Fare" value="{{book.price}}" readonly>
+                                </div>
+
+                                <div>
+                                    <p style="margin-bottom: -15px;">Total Amount</p>
+                                    <input type="number" name="total_fare" id="totalAmount" class="form-control" placeholder="Total Fare" value="{{book.price}}" readonly>
+                                </div>
                             </div>
                         {% endif %}
             
@@ -311,9 +373,6 @@
             </div>
 
         </div>
-
-
-
     </section>
     
     
@@ -421,11 +480,56 @@
     <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
     <script>
         function calculatePrice(event){
-            let myPrice = parseFloat(document.querySelector("#price").value);
-            let myExtraLuggage = parseFloat(document.querySelector("#luggage").value);
-            let result = myPrice + (myExtraLuggage * 12000)
-            document.querySelector("#price").value = result
-        }                
+            event.preventDefault()
+
+            let extraLuggageQuantity = document.querySelector("#extraLuggageQuantity").value;
+            let eachExtraLuggageAmount = document.querySelector("#eachExtraLuggageAmount").value;
+            let extraLuggageAmount = document.querySelector("#extraLuggageAmount").value;
+            let flightAmount = document.querySelector("#flightAmount").value;
+            let totalAmount = document.querySelector("#totalAmount").value;
+
+            extraLuggageQuantity = parseFloat(extraLuggageQuantity); 
+            eachExtraLuggageAmount = parseFloat(eachExtraLuggageAmount);         
+            extraLuggageAmount = parseFloat(extraLuggageAmount);          
+            flightAmount = parseFloat(flightAmount);          
+            totalAmount = parseFloat(totalAmount); 
+            
+            extraLuggageAmount = extraLuggageQuantity * eachExtraLuggageAmount;
+            totalAmount = extraLuggageAmount + flightAmount;
+
+            document.querySelector("#extraLuggageAmount").value = extraLuggageAmount
+            document.querySelector("#totalAmount").value = totalAmount
+        }      
+        
+
+
+        function validateDateOfBirth(event){
+            event.preventDefault()
+
+            let currentDate = new Date();
+            let dateOfBirthId = document.getElementById("dateOfBirthId").value;
+            let dateOfBirthDate = new Date(dateOfBirthId);
+
+            if (dateOfBirthDate > currentDate){
+                document.getElementById("dateOfBirthId").value = ""
+                return alert("This is an invalid date of birth!")
+            }
+        }
+
+
+
+        function validatePassportExpiryDate(event){
+            event.preventDefault()
+
+            let currentDate = new Date();
+            let expiryId = document.getElementById("expiryId").value;
+            let expiryDate = new Date(expiryId);
+
+            if (expiryDate < currentDate){
+                document.getElementById("expiryId").value = ""
+                return alert("This card has expired and is not valid for airline booking!")
+            }
+        }
     </script>
 </body>
 </html>
